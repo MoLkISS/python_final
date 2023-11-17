@@ -1,7 +1,6 @@
 from app_flask import *
 from flask import render_template
 from flask import request, session, redirect, url_for
-from werkzeug.utils import secure_filename
 import requests
 
 
@@ -56,3 +55,8 @@ def logout():
     session.pop('uid', None)
     session.pop('login', None)
     return redirect(url_for('home'))
+
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+        app.run(debug=True)
