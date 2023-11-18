@@ -53,6 +53,60 @@ def logout():
     session.pop('login', None)
     return redirect(url_for('home'))
 
+
+@app.route('/items')
+def items():
+    response = requests.get('http://localhost:8000/items/')
+    if response.status_code == 200:
+        data = response.json()
+        session['items_data'] = data
+        return render_template("items.html", data=enumerate(data))
+    else:
+        return render_template("warning.html")
+
+# Ваш Flask-маршрут
+@app.route('/item/<int:item_index>')
+def item(item_index):
+    try:
+        data = session.get('items_data', [])
+        selected_item = data[item_index]
+        selected_item["item_index"] = item_index
+        print(selected_item)
+        return render_template("item.html", item=selected_item)
+    except IndexError:
+        return render_template("error.html", message="Item not found.")
+
+@app.route("/cart", methods=["GET"])
+def cart_get():
+    if session['authenticated'] != True:
+        return render_template("warning.html")
+    
+    user_id = session['uid']
+    user = db.session.query(User).filter_by(user_id=user_id).first()
+
+    if request.method == "GET":
+        cart_items = user.user_items
+        return render_template("card.html", cart_items=cart_items)
+    
+@app.route("/cart/<int:item_index>", methods=["POST"])
+def cart(item_index):
+    if session['authenticated'] != True:
+        return render_template("warning.html")
+    
+    user_id = session['uid']
+    user = db.session.query(User).filter_by(user_id=user_id).first()
+    
+    if request.method == "POST":
+        item = session.get('items_data', [])
+        selected_item = item[item_index]
+        selected_item["item_owner"] = user_id
+        response = requests.post("http://localhost:8000/cart", json=selected_item)
+        if response.status_code == 200:
+            return redirect(url_for('items'))
+        else:
+            return "<h2>somthing went wrong in back</h2>"
+
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()

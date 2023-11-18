@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import web.models as models
 import pydantic_validation
 import crud
+import requests
+from bs4 import BeautifulSoup
 
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
@@ -45,9 +47,31 @@ def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 def get_certain_user(login, db: Session = Depends(get_db)):
     return crud.get_user_by_login(db, login)
 
-@app.get("/items/", response_model=list[pydantic_validation.Item])
+@app.get("/items/")
 def get_all_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return crud.get_all_items(db)
+    url = 'https://kimex.kz/catalog/muzhskoe/'  # Замените на ваш URL
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        html = response.text
+        soup = BeautifulSoup(html, 'html.parser')
+
+        products = soup.find_all('a', class_='card')
+        data = []
+
+        for product in products:
+            name = product.find('span', class_='card__title').text.strip()
+            price = product.find('span', class_='price-current').text.strip()
+            image_url = product.select_one('.swiper-slide img')['src']
+
+            item = {
+                'name': name,
+                'price': price,
+                'image_url': image_url
+            }
+            data.append(item)
+        return data
+    # return crud.get_all_items(db)
 
 @app.get("/user/items/{user_id}", response_model=list[pydantic_validation.Item])
 def get_user_works(user_id, db: Session = Depends(get_db)):
@@ -56,3 +80,7 @@ def get_user_works(user_id, db: Session = Depends(get_db)):
 @app.get("/item/{item_id}/", response_model=pydantic_validation.Item)
 def get_work(item_id:int, db: Session = Depends(get_db)):
     return crud.get_item_by_id(db, item_id)
+
+@app.post("/cart", response_model=pydantic_validation.Item)
+def add_cart(item, db: Session = Depends(get_db)):
+    return crud.add_item_to_cart(db, item=item)

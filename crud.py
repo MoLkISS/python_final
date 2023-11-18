@@ -19,6 +19,16 @@ def get_user_items(db:Session,user_id: int)->Session.query:
 def get_all_items(db: Session, skip: int = 0, limit: int = 100)->Session.query:
     return db.query(models.Item).offset(skip).limit(limit).all()
 
+def add_item_to_cart(db: Session, item)->Session.query:
+    new_item = models.Item(item_title=item.name,
+                           item_description="",
+                           item_cost = item.price,
+                           item_owner = item.user_id)
+    db.add(new_item)
+    db.commit()
+    db.refresh(new_item)
+    return new_item
+
 def create_user(db: Session, user: pydantic_validation.UserCreate)->models.User:
     new_user = models.User(login=user.login,
                            email = user.email,

@@ -15,6 +15,7 @@ class ItemCreate(ItemBase):
 class Item(ItemBase):
     item_id: int
     item_owner: int
+    item_image: str
 
     class Config:
         orm_mode: True
