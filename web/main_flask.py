@@ -2,7 +2,7 @@ from app_flask import *
 from flask import render_template
 from flask import request, session, redirect, url_for
 import requests
-from models import User, Item
+from models import User, Item, Shop
 
 
 @app.route('/home')
@@ -60,6 +60,16 @@ def items():
     if response.status_code == 200:
         data = response.json()
         session['items_data'] = data
+        for shop in data:
+                shop = {
+                    'shop_title': shop["item_title"],
+                    'shop_description': shop["item_description"],
+                    'shop_cost': shop["item_cost"],
+                    'shop_image': shop["item_image"]
+                }
+                db.session.query(Shop).add_entity(shop)
+                db.session.commit()
+                db.session.refresh(shop)
         return render_template("items.html", data=enumerate(data))
     else:
         return render_template("warning.html")

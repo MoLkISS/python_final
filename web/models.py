@@ -28,4 +28,14 @@ class Item(Base):
     
     def __repr__(self) -> str:
         return f"Item(item_id={self.item_id!r}, item_title={self.item_title!r}, item_description={self.item_description!r}, item_owner={self.item_owner!r})"
-        
+
+class Shop(Base):
+    __tablename__ = "shops"
+    shop_id = Column(Integer, primary_key=True)
+    shop_title = Column(String(255), nullable=False)
+    shop_description = Column(String(255), nullable=False)
+    shop_cost = Column(Integer, nullable=False)
+    shop_image = Column(String(300), nullable=False)
+
+    def __repr__(self) -> str:
+        return f"Shop(shop_id={self.shop_id!r}, shop_title={self.shop_title!r}, shop_description={self.shop_description!r}, shop_owner={self.shop_owner!r})"
