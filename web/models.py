@@ -21,6 +21,7 @@ class Item(Base):
     item_title = Column(String(255), nullable=False)
     item_description = Column(String(255), nullable=False)
     item_cost = Column(Integer, nullable=False)
+    item_image = Column(String(300), nullable=False)
     item_owner = Column(Integer, ForeignKey("users.user_id"), nullable=False)
 
     owner = relationship("User", back_populates="user_items")
