@@ -2,10 +2,7 @@ from app_flask import *
 from flask import render_template
 from flask import request, session, redirect, url_for
 import requests
-
-
-from database.models import User, Work
-from database.crud import add_user, add_work
+from models import User, Item
 
 
 @app.route('/home')
@@ -26,7 +23,7 @@ def register(context=None):
             'password': request.form['password']
         }
         response = requests.post('http://localhost:8000/users/create/', json=data)
-        if response:
+        if response.status_code == 200:
             return redirect(url_for('login'))
         else:
             return f'User creation failed: {response.text}'

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %} Home Page {% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <h1>Добро пожаловать!</h1>
+    <p>Здесь вы можете зарегистрироваться или войти в систему.</p>
+
+    {% if is_authenticated %}
+        <a class="btn btn-primary" href="{{ url_for('logout') }}">Выйти</a>
+    {% else %}
+        <div class="btn-group" role="group">
+            <a class="btn btn-success" href="{{ url_for('register') }}">Зарегистрироваться</a>
+        </div>
+        <div class="btn-group" role="group">
+            <a class="btn btn-primary mx-2" href="{{ url_for('login') }}">Войти</a>
+        </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

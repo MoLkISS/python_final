@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
-import models, pydantic_validation
+import web.models as models, pydantic_validation
 
 def get_user_by_login(db: Session, user_login: str)->Session.query:
-    return db.query(models.User).filter(models.User.login == user_login)
+    return db.query(models.User).filter(models.User.login == user_login).first()
 
 def get_user_by_email(db: Session, user_email: str)->Session.query:
     return db.query(models.User).filter(models.User.email == user_email)
