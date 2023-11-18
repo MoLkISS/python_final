@@ -20,10 +20,11 @@ def get_all_items(db: Session, skip: int = 0, limit: int = 100)->Session.query:
     return db.query(models.Item).offset(skip).limit(limit).all()
 
 def add_item_to_cart(db: Session, item)->Session.query:
-    new_item = models.Item(item_title=item.name,
-                           item_description="",
-                           item_cost = item.price,
-                           item_owner = item.user_id)
+    new_item = models.Item(item_title=item.item_title,
+                           item_description=item.descriptio,
+                           item_cost = item.item_cost,
+                           item_image = item.item_image,
+                           item_owner = item.item_owner)
     db.add(new_item)
     db.commit()
     db.refresh(new_item)

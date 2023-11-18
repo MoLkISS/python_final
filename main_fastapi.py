@@ -81,6 +81,6 @@ def get_user_works(user_id, db: Session = Depends(get_db)):
 def get_work(item_id:int, db: Session = Depends(get_db)):
     return crud.get_item_by_id(db, item_id)
 
-@app.post("/cart", response_model=pydantic_validation.Item)
+@app.post("/add-to-cart")
 def add_cart(item, db: Session = Depends(get_db)):
     return crud.add_item_to_cart(db, item=item)

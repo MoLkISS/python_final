@@ -7,6 +7,7 @@ class UserBase(BaseModel):
 class ItemBase(BaseModel):
     item_title: str
     item_description: str
+    item_image: str
     item_cost: int
 
 class ItemCreate(ItemBase):
@@ -15,7 +16,6 @@ class ItemCreate(ItemBase):
 class Item(ItemBase):
     item_id: int
     item_owner: int
-    item_image: str
 
     class Config:
         orm_mode: True
