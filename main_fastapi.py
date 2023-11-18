@@ -65,9 +65,10 @@ def get_all_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
             image_url = product.select_one('.swiper-slide img')['src']
 
             item = {
-                'name': name,
-                'price': price,
-                'image_url': image_url
+                'item_title': name,
+                'item_description': "",
+                'item_cost': price,
+                'item_image': image_url
             }
             data.append(item)
         return data

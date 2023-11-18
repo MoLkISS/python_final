@@ -48,3 +48,13 @@ def create_item(db: Session, item: pydantic_validation.ItemCreate)->models.Item:
     db.commit()
     db.refresh(new_item)
     return new_item
+
+def create_shop(db: Session, shop)->models.Shop:
+    new_shop = models.Shop(shop_title = shop.title,
+                           shop_description = shop.description,
+                           shop_cost = shop.cost,
+                           shop_image = shop.image)
+    db.add(new_shop)
+    db.commit()
+    db.refresh(new_shop)
+    return new_shop
