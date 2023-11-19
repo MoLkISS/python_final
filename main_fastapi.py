@@ -71,6 +71,15 @@ def get_all_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
                 'item_image': image_url
             }
             data.append(item)
+            # for shop in data:
+            #     shop = {
+            #         'shop_title': shop["item_title"],
+            #         'shop_description': shop["item_description"],
+            #         'shop_cost': shop["item_cost"],
+            #         'shop_image': shop["item_image"]
+            #     }
+            #     crud.add_item_to_cart(db=db, shop=shop)
+                
         return data
     # return crud.get_all_items(db)
 
