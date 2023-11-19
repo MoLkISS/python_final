@@ -21,10 +21,21 @@ class Item(Base):
     item_title = Column(String(255), nullable=False)
     item_description = Column(String(255), nullable=False)
     item_cost = Column(Integer, nullable=False)
+    item_image = Column(String(300), nullable=False)
     item_owner = Column(Integer, ForeignKey("users.user_id"), nullable=False)
 
     owner = relationship("User", back_populates="user_items")
     
     def __repr__(self) -> str:
         return f"Item(item_id={self.item_id!r}, item_title={self.item_title!r}, item_description={self.item_description!r}, item_owner={self.item_owner!r})"
-        
+
+class Shop(Base):
+    __tablename__ = "shops"
+    shop_id = Column(Integer, primary_key=True)
+    shop_title = Column(String(255), nullable=False)
+    shop_description = Column(String(255), nullable=False)
+    shop_cost = Column(Integer, nullable=False)
+    shop_image = Column(String(300), nullable=False)
+
+    def __repr__(self) -> str:
+        return f"Shop(shop_id={self.shop_id!r}, shop_title={self.shop_title!r}, shop_description={self.shop_description!r}, shop_owner={self.shop_owner!r})"

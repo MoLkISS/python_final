@@ -5,7 +5,7 @@ db = SQLAlchemy()
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///.\\dbset.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///..\\dbset.db'
 
 with app.app_context():
     db.init_app(app)
