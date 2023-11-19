@@ -7,7 +7,6 @@
 <div class="container">
     <h1>Добро пожаловать!</h1>
     <p>Здесь вы можете зарегистрироваться или войти в систему.</p>
-
     {% if is_authenticated %}
         <a class="btn btn-primary" href="{{ url_for('logout') }}">Выйти</a>
     {% else %}
