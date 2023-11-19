@@ -60,16 +60,6 @@ def items():
     if response.status_code == 200:
         data = response.json()
         session['items_data'] = data
-        for shop in data:
-                shop = {
-                    'shop_title': shop["item_title"],
-                    'shop_description': shop["item_description"],
-                    'shop_cost': shop["item_cost"],
-                    'shop_image': shop["item_image"]
-                }
-                db.session.query(Shop).add_entity(shop)
-                db.session.commit()
-                db.session.refresh(shop)
         return render_template("items.html", data=enumerate(data))
     else:
         return render_template("warning.html")
@@ -81,7 +71,6 @@ def item(item_index):
         data = session.get('items_data', [])
         selected_item = data[item_index]
         selected_item["item_index"] = item_index
-        print(selected_item)
         return render_template("item.html", item=selected_item)
     except IndexError:
         return render_template("error.html", message="Item not found.")
