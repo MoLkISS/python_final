@@ -53,6 +53,13 @@ def logout():
     session.pop('login', None)
     return redirect(url_for('home'))
 
+@app.route("/items", methods=["GET"])
+def items():
+    if session['authenticated'] != True:
+        return render_template("warning.html")
+    
+    response = 
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
