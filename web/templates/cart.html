@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %} Cart {% endblock %}
+
+{% block body %} 
+
+{% for item in data %}
+
+<div class="container">
+    <p>item - {{ item }}</p>
+</div>
+
+{% endfor %}
+
+{% endblock %}

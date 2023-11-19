@@ -7,7 +7,8 @@ class UserBase(BaseModel):
 class ItemBase(BaseModel):
     item_title: str
     item_description: str
-    item_cost: int
+    item_image: str
+    item_cost: str
 
 class ItemCreate(ItemBase):
     item_owner: int

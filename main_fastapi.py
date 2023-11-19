@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import web.models as models
 import pydantic_validation
 import crud
+import requests
+from bs4 import BeautifulSoup
 
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
@@ -32,6 +34,17 @@ def create_user(user:pydantic_validation.UserCreate, db: Session = Depends(get_d
         raise HTTPException(status_code=400, detail="Login is alredy taken by another user.")
     return crud.create_user(db=db, user=user)
 
+@app.post("/add-to-cart")
+def add_cart(item: pydantic_validation.ItemCreate, db: Session = Depends(get_db)):
+    try:
+        crud.add_item_to_cart(db=db, item=item)
+    except Exception:
+        raise HTTPException(status_code=303, detail="Something went wrong id crud")
+
+@app.get("/user/cart")
+def user_cart(user_id: int, db: Session = Depends(get_db)):
+    return crud.get_user_items(db=db, user_id=user_id)
+
 @app.post("/item/create/", response_model=pydantic_validation.Item)
 def create_item(item: pydantic_validation.ItemCreate, db: Session=Depends(get_db)):
     return crud.create_item(db, item=item)
@@ -45,9 +58,41 @@ def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 def get_certain_user(login, db: Session = Depends(get_db)):
     return crud.get_user_by_login(db, login)
 
-@app.get("/items/", response_model=list[pydantic_validation.Item])
+@app.get("/items/")
 def get_all_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return crud.get_all_items(db)
+    url = 'https://kimex.kz/catalog/muzhskoe/'  # Замените на ваш URL
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        html = response.text
+        soup = BeautifulSoup(html, 'html.parser')
+
+        products = soup.find_all('a', class_='card')
+        data = []
+
+        for product in products:
+            name = product.find('span', class_='card__title').text.strip()
+            price = product.find('span', class_='price-current').text.strip()
+            image_url = product.select_one('.swiper-slide img')['src']
+
+            item = {
+                'item_title': name,
+                'item_description': "",
+                'item_cost': price,
+                'item_image': image_url
+            }
+            data.append(item)
+            # for shop in data:
+            #     shop = {
+            #         'shop_title': shop["item_title"],
+            #         'shop_description': shop["item_description"],
+            #         'shop_cost': shop["item_cost"],
+            #         'shop_image': shop["item_image"]
+            #     }
+            #     crud.add_item_to_cart(db=db, shop=shop)
+                
+        return data
+    # return crud.get_all_items(db)
 
 @app.get("/user/items/{user_id}", response_model=list[pydantic_validation.Item])
 def get_user_works(user_id, db: Session = Depends(get_db)):
@@ -56,3 +101,4 @@ def get_user_works(user_id, db: Session = Depends(get_db)):
 @app.get("/item/{item_id}/", response_model=pydantic_validation.Item)
 def get_work(item_id:int, db: Session = Depends(get_db)):
     return crud.get_item_by_id(db, item_id)
+
