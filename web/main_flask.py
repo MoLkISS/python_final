@@ -58,7 +58,7 @@ def items():
     if session['authenticated'] != True:
         return render_template("warning.html")
     
-    response = 
+    # response = 
 
 if __name__ == "__main__":
     with app.app_context():
