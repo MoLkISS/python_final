@@ -13,7 +13,7 @@ def get_all_users(db: Session, skip: int = 0, limit: int = 100)->Session.query:
 def get_item_by_id(db: Session, item_id: int)->Session.query:
     return db.query(models.Item).filter(models.Item.item_id == item_id).first()
 
-def get_user_items(db:Session,user_id: int)->Session.query:
+def get_user_items(db:Session,user_id)->Session.query:
     return db.query(models.Item).filter(models.Item.item_owner == user_id).all()
 
 def get_all_items(db: Session, skip: int = 0, limit: int = 100)->Session.query:
@@ -21,7 +21,7 @@ def get_all_items(db: Session, skip: int = 0, limit: int = 100)->Session.query:
 
 def add_item_to_cart(db: Session, item)->Session.query:
     new_item = models.Item(item_title=item.item_title,
-                           item_description=item.descriptio,
+                           item_description=item.item_description,
                            item_cost = item.item_cost,
                            item_image = item.item_image,
                            item_owner = item.item_owner)

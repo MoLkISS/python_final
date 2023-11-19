@@ -34,6 +34,17 @@ def create_user(user:pydantic_validation.UserCreate, db: Session = Depends(get_d
         raise HTTPException(status_code=400, detail="Login is alredy taken by another user.")
     return crud.create_user(db=db, user=user)
 
+@app.post("/add-to-cart")
+def add_cart(item: pydantic_validation.ItemCreate, db: Session = Depends(get_db)):
+    try:
+        crud.add_item_to_cart(db=db, item=item)
+    except Exception:
+        raise HTTPException(status_code=303, detail="Something went wrong id crud")
+
+@app.get("/user/cart")
+def user_cart(user_id: int, db: Session = Depends(get_db)):
+    return crud.get_user_items(db=db, user_id=user_id)
+
 @app.post("/item/create/", response_model=pydantic_validation.Item)
 def create_item(item: pydantic_validation.ItemCreate, db: Session=Depends(get_db)):
     return crud.create_item(db, item=item)
@@ -91,6 +102,3 @@ def get_user_works(user_id, db: Session = Depends(get_db)):
 def get_work(item_id:int, db: Session = Depends(get_db)):
     return crud.get_item_by_id(db, item_id)
 
-@app.post("/add-to-cart")
-def add_cart(item, db: Session = Depends(get_db)):
-    return crud.add_item_to_cart(db, item=item)
