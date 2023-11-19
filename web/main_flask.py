@@ -2,7 +2,7 @@ from app_flask import *
 from flask import render_template
 from flask import request, session, redirect, url_for
 import requests
-from models import User, Item, Shop
+from models import User, Item
 
 
 @app.route('/home')
@@ -64,16 +64,51 @@ def items():
         return render_template("warning.html")
 
 # Ваш Flask-маршрут
-@app.route('/item/<int:item_index>')
-def item(item_index):
+# Ваш код в Flask-приложении
+@app.route('/item/<int:item_id>')
+def item(item_id):
     try:
         data = session.get('items_data', [])
-        selected_item = data[item_index]
-        selected_item["item_index"] = item_index
-        print(selected_item)
-        return render_template("item.html", item=selected_item)
+        selected_item = data[item_id]
+        selected_item["item_index"] = item_id
+
+        user_id = session.get('uid')
+        
+        return render_template("item.html", item=selected_item, user_id=user_id, item_id=item_id)
     except IndexError:
         return render_template("error.html", message="Item not found.")
+
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    if session['authenticated'] != True:
+        return render_template("warning.html")
+    
+
+    if request.method == 'POST':
+        item_title = request.form.get('item_title')
+        item_description = request.form.get('item_description')
+        item_cost = request.form.get('item_cost')
+        item_image = request.form.get('item_image')
+        item_owner = session['uid']
+
+        # Подготовка данных в формате JSON
+        data = {
+            'item_title': item_title,
+            'item_description': item_description,
+            'item_cost': item_cost,
+            'item_owner': item_owner,
+            'item_image': item_image,
+        }
+        print(data)
+        response = requests.post('http://localhost:8000/upload', json=data)
+
+        if response.status_code == 200:
+            return redirect(url_for('home'))
+        else:
+            return render_template('error.html', message='Failed to upload product')
+
+    return render_template('upload.html')
 
 @app.route("/cart_get")
 def cart_get():
@@ -88,8 +123,8 @@ def cart_get():
     else:
         return render_template("warning.html")
     
-@app.route("/cart/<int:item_index>")
-def cart(item_index):
+@app.route('/add_to_cart/<int:user_id>/<int:item_id>', methods=['POST'])
+def add_to_cart(item_index):
     if session['authenticated'] != True:
         return render_template("warning.html")
     try:
@@ -110,15 +145,49 @@ def cart(item_index):
             "item_owner": session["uid"],
             "item_image": selected_item["item_image"]
         }
-        print(payload)
 
-        response = requests.post("http://localhost:8000/add-to-cart", json=payload)
+        response = requests.post("http://localhost:8000/add_to_cart", json=payload)
         if response.status_code == 200:
-            return redirect(url_for('items'))
+            return "item succesfully addet to cart"
         else:
             return f"Something went wrong while adding item to cart: {response.text}"
     except Exception:
         return "something went wrong in flask"
+    
+# ... (ваш текущий код)
+
+@app.route("/cart_remove_multiple", methods=['POST'])
+def cart_remove_multiple():
+    try:
+        # Получаем список выбранных предметов из формы
+        selected_items = request.form.getlist('selected_items[]')
+
+        if not selected_items:
+            return "No items selected for removal"
+
+        # Получаем данные пользователя и корзины
+        user_id = session.get('uid')
+        items_data = session.get('items_data', [])
+
+        # Отправляем запрос на удаление каждого выбранного предмета
+        for item_id in selected_items:
+            item_data = {
+                "item_id": int(item_id),
+                "user_id": int(user_id)
+            }
+            response = requests.post("http://localhost:8000/remove-from-cart", json=item_data)
+
+            if response.status_code != 200:
+                return f"Failed to remove item from cart: {response.text}"
+
+        # Обновляем данные сессии
+        session['items_data'] = items_data
+
+        # Возвращаем успешный результат или перенаправляем пользователя
+        return redirect(url_for('cart_get'))
+    except Exception as e:
+        return f"Something went wrong: {str(e)}"
+
 
 
 if __name__ == "__main__":

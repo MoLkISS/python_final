@@ -8,7 +8,11 @@ class ItemBase(BaseModel):
     item_title: str
     item_description: str
     item_image: str
-    item_cost: str
+    item_cost: int
+
+class CartBase(BaseModel):
+    item_id: int
+    item_owner: int
 
 class ItemCreate(ItemBase):
     item_owner: int
@@ -29,3 +33,7 @@ class User(UserBase):
 
     class Config:
         orm_mode: True
+
+class ItemRemove(BaseModel):
+    item_id: int
+    user_id: int

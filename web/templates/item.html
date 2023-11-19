@@ -11,7 +11,7 @@
         <div class="col-md-6">
             <h2>{{ item['item_title'] }}</h2>
             <p>Price: {{ item['item_cost'] }}</p>
-            <a href="{{ url_for('cart', item_index=item['item_index']) }}">Add to Cart</a>
+            <a href="{{ url_for('add_to_cart', user_id=user_id, item_id=item_id) }}">Add to Cart</a>
         </div>
     </div>
 </div>
