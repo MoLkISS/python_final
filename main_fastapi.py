@@ -8,7 +8,7 @@ import crud
 import requests
 from web.models import Item
 from typing import List 
-
+import traceback
 
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
@@ -46,15 +46,16 @@ async def upload_product(item: pydantic_validation.ItemCreate, db: Session = Dep
 
 
 @app.post("/add_to_cart")
-def add_to_cart(item: pydantic_validation.CartBase, db: Session = Depends(get_db)):
+def add_to_cart(request_data: pydantic_validation.CartBase, db: Session = Depends(get_db)):
     try:
-        crud.add_item_to_cart(db=db, item=item)
-    except Exception:
-        raise HTTPException(status_code=303, detail="Something went wrong in crud")
+        crud.add_item_to_cart(db=db, user_id=request_data.user_id, item_id=request_data.item_id)
+    except Exception as e:
+        traceback_str = traceback.format_exc()
+        raise HTTPException(status_code=500, detail=f"Error in crud: {str(e)}\n{traceback_str}")
     
 
 @app.post("/remove-multiple-from-cart")
-def remove_multiple_from_cart(selected_items: List[pydantic_validation.ItemRemove], db: Session = Depends(get_db)):
+def remove_multiple_from_cart(selected_items: List[pydantic_validation.CartBase], db: Session = Depends(get_db)):
     try:
         # Удаляем каждый выбранный предмет из корзины
         for item_remove in selected_items:
@@ -82,11 +83,12 @@ def get_certain_user(login, db: Session = Depends(get_db)):
 
 @app.get("/items/")
 def get_all_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    items = db.query(Item).offset(skip).limit(limit).all()
+    items = crud.get_all_items(db=db, skip=skip, limit=limit)
 
     data = []
     for item in items:
         item_data = {
+            'item_id': item.item_id,
             'item_title': item.item_title,
             'item_description': item.item_description,
             'item_cost': item.item_cost,
@@ -103,4 +105,3 @@ def get_user_works(user_id, db: Session = Depends(get_db)):
 @app.get("/item/{item_id}/", response_model=pydantic_validation.Item)
 def get_item(item_id:int, db: Session = Depends(get_db)):
     return crud.get_item_by_id(db, item_id)
-

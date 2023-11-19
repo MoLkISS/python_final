@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 import web.models as models, pydantic_validation
 
 def get_user_by_login(db: Session, user_login: str)->Session.query:
@@ -19,23 +19,34 @@ def get_user_items(db:Session,user_id)->Session.query:
 def get_all_items(db: Session, skip: int = 0, limit: int = 100)->Session.query:
     return db.query(models.Item).offset(skip).limit(limit).all()
 
-def add_item_to_cart(db_session, user_id, item_id):
+def add_item_to_cart(db: Session, user_id: int, item_id: int):
     new_cart_item = models.Cart(user_id=user_id, item_id=item_id)
-    db_session.add(new_cart_item)
-    db_session.commit()
-    db_session.refresh(new_cart_item)
+    db.add(new_cart_item)
+    db.commit()
+    db.refresh(new_cart_item)
     return new_cart_item
 
-def remove_item_from_cart(db_session, cart_item_id):
-    cart_item = db_session.query(models.Cart).get(cart_item_id)
+def remove_item_from_cart(db: Session, user_id: int, item_id: int):
+    cart_item = (
+        db.query(models.Cart)
+        .filter_by(user_id=user_id, item_id=item_id)
+        .first()
+    )
     if cart_item:
-        db_session.delete(cart_item)
-        db_session.commit()
+        db.delete(cart_item)
+        db.commit()
         return cart_item
     return None
 
+
+
 def get_cart_items_by_user(user_id: int, db: Session):
-    return db.query(models.Cart).filter_by(user_id=user_id).all()
+    return (
+        db.query(models.Cart)
+        .filter_by(user_id=user_id)
+        .options(joinedload(models.Cart.item))
+        .all()
+    )
 
 
 def create_user(db: Session, user: pydantic_validation.UserCreate)->models.User:

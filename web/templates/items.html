@@ -12,7 +12,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ item['item_title'] }}</h5>
                         <p class="card-text">Price: {{ item['item_cost'] }}</p>
-                        <a href="{{ url_for('item', item_index=item_index) }}" class="btn btn-primary btn-block">See more</a>
+                        <a href="{{ url_for('item', item_id = item_index) }}" class="btn btn-primary btn-block">See more</a>
                     </div>
                 </div>
             </div>

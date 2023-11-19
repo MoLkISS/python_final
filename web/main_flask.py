@@ -63,14 +63,13 @@ def items():
     else:
         return render_template("warning.html")
 
-# Ваш Flask-маршрут
-# Ваш код в Flask-приложении
 @app.route('/item/<int:item_id>')
 def item(item_id):
     try:
-        data = session.get('items_data', [])
+        data = session.get('items_data')
         selected_item = data[item_id]
-        selected_item["item_index"] = item_id
+        selected_item["item_id"] = item_id
+
 
         user_id = session.get('uid')
         
@@ -100,7 +99,6 @@ def upload():
             'item_owner': item_owner,
             'item_image': item_image,
         }
-        print(data)
         response = requests.post('http://localhost:8000/upload', json=data)
 
         if response.status_code == 200:
@@ -119,36 +117,25 @@ def cart_get():
     response = requests.get("http://localhost:8000/user/cart", params={'user_id': user_id})
     if response.status_code == 200:
         data = response.json()
+        print(data)
         return render_template("cart.html", data=data)
     else:
         return render_template("warning.html")
     
-@app.route('/add_to_cart/<int:user_id>/<int:item_id>', methods=['POST'])
-def add_to_cart(item_index):
+@app.route('/add_to_cart/<int:user_id>/<int:item_id>', methods=['POST', 'GET'])
+def add_to_cart(user_id, item_id):
     if session['authenticated'] != True:
         return render_template("warning.html")
     try:
-
-        user_id = session['uid']
-        user = db.session.query(User).filter_by(user_id=user_id).first()
-        
-        items_data = session.get('items_data', [])
-        selected_item = items_data[item_index]
-        selected_item["item_owner"] = user_id
-        selected_item["item_description"] = ""
-            
         # Убедимся, что тело JSON соответствует модели ItemCreate
         payload = {
-            "item_title": selected_item["item_title"],
-            "item_description": selected_item["item_description"],  # Добавьте описание, если оно доступно
-            "item_cost": selected_item['item_cost'],
-            "item_owner": session["uid"],
-            "item_image": selected_item["item_image"]
+            "user_id": user_id,
+            "item_id": item_id
         }
 
         response = requests.post("http://localhost:8000/add_to_cart", json=payload)
         if response.status_code == 200:
-            return "item succesfully addet to cart"
+            return redirect(url_for('items'))
         else:
             return f"Something went wrong while adding item to cart: {response.text}"
     except Exception:
@@ -169,16 +156,14 @@ def cart_remove_multiple():
         user_id = session.get('uid')
         items_data = session.get('items_data', [])
 
-        # Отправляем запрос на удаление каждого выбранного предмета
-        for item_id in selected_items:
-            item_data = {
-                "item_id": int(item_id),
-                "user_id": int(user_id)
-            }
-            response = requests.post("http://localhost:8000/remove-from-cart", json=item_data)
+        # Преобразуем список в список словарей
+        items_to_remove = [{"item_id": int(item_id)+1, "user_id": int(user_id)} for item_id in selected_items]
+        print(items_to_remove)
+        # Отправляем запрос на удаление всех выбранных предметов
+        response = requests.post("http://localhost:8000/remove-multiple-from-cart", json=items_to_remove)
 
-            if response.status_code != 200:
-                return f"Failed to remove item from cart: {response.text}"
+        if response.status_code != 200:
+            return f"Failed to remove item(s) from cart: {response.text}"
 
         # Обновляем данные сессии
         session['items_data'] = items_data
@@ -187,6 +172,9 @@ def cart_remove_multiple():
         return redirect(url_for('cart_get'))
     except Exception as e:
         return f"Something went wrong: {str(e)}"
+
+
+
 
 
 

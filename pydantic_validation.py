@@ -12,7 +12,7 @@ class ItemBase(BaseModel):
 
 class CartBase(BaseModel):
     item_id: int
-    item_owner: int
+    user_id: int
 
 class ItemCreate(ItemBase):
     item_owner: int

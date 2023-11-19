@@ -11,7 +11,6 @@ class User(Base):
     password = Column(String(255), nullable=False)
 
     user_items = relationship("Item", back_populates='owner', cascade="all, delete-orphan")
-    cart = relationship("Cart", back_populates="users")
     
     def __repr__(self) -> str:
         return f"User(user_id {self.user_id!r}, login={self.login!r}, email={self.email!r})"
@@ -26,8 +25,8 @@ class Item(Base):
     item_owner = Column(Integer, ForeignKey("users.user_id"), nullable=False)
 
     owner = relationship("User", back_populates="user_items")
-    cart = relationship("Cart", back_populates="item")
-
+    carts = relationship("Cart", back_populates="item")
+    
     def __repr__(self) -> str:
         return f"Item(item_id={self.item_id!r}, item_title={self.item_title!r}, item_description={self.item_description!r}, item_owner={self.item_owner!r})"
 
@@ -36,3 +35,4 @@ class Cart(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.user_id'))
     item_id = Column(Integer, ForeignKey('items.item_id'))
+    item = relationship("Item", back_populates="carts")
