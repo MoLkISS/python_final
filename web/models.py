@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Boolean, Integer, String, ForeignKey
+from sqlalchemy import Column, Boolean, Integer, String, ForeignKey, Text
 from sqlalchemy.orm import relationship
 
 from database import Base
@@ -11,6 +11,7 @@ class User(Base):
     password = Column(String(255), nullable=False)
 
     user_items = relationship("Item", back_populates='owner', cascade="all, delete-orphan")
+    reviews = relationship("Review", back_populates="user")
     
     def __repr__(self) -> str:
         return f"User(user_id {self.user_id!r}, login={self.login!r}, email={self.email!r})"
@@ -35,4 +36,17 @@ class Cart(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.user_id'))
     item_id = Column(Integer, ForeignKey('items.item_id'))
+    
     item = relationship("Item", back_populates="carts")
+
+
+class Review(Base):
+    __tablename__ = "reviews"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+    text = Column(Text, nullable=False)
+    rating = Column(Integer)
+
+    # Добавляем связи, чтобы облегчить доступ к связанным объектам (пользователь и товар)
+    user = relationship("User", back_populates="reviews")

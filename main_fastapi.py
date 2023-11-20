@@ -65,6 +65,19 @@ def remove_multiple_from_cart(selected_items: List[pydantic_validation.CartBase]
 
         return {"detail": "Selected items successfully removed from the cart"}
     except Exception as e:
+        traceback_str = traceback.format_exc()
+        raise HTTPException(status_code=500, detail=f"Something went wrong: {str(e)}\n{traceback_str}")
+
+
+@app.post("/add_review")
+def create_review(review: pydantic_validation.ReviewCreate, db: Session = Depends(get_db)):
+    try:
+
+        crud.create_review(db=db, review=review)
+
+        return {"detail": "Review created successfully"}
+    except Exception as e:
+        # Handle any exceptions and return an appropriate response
         raise HTTPException(status_code=500, detail=f"Something went wrong: {str(e)}")
 
 
@@ -105,3 +118,16 @@ def get_user_works(user_id, db: Session = Depends(get_db)):
 @app.get("/item/{item_id}/", response_model=pydantic_validation.Item)
 def get_item(item_id:int, db: Session = Depends(get_db)):
     return crud.get_item_by_id(db, item_id)
+
+@app.get("/get_reviews")
+def fetch_reviews(db: Session = Depends(get_db)):
+    reviews = crud.get_reviews_with_user_login(db=db)
+    return reviews
+
+@app.get('/get_user_data/{user_id}')
+def fetch_user_data(user_id: int, db: Session = Depends(get_db)):
+    user_data = crud.get_user_data(db, user_id)
+    if user_data:
+        return user_data
+    else:
+        return {"detail": "User not found"}

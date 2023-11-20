@@ -28,17 +28,14 @@ def add_item_to_cart(db: Session, user_id: int, item_id: int):
 
 def remove_item_from_cart(db: Session, user_id: int, item_id: int):
     cart_item = (
-        db.query(models.Cart)
-        .filter_by(user_id=user_id, item_id=item_id)
-        .first()
+        db.query(models.Cart).filter_by(user_id=user_id, item_id=item_id).first()
     )
+    print(cart_item)
     if cart_item:
         db.delete(cart_item)
         db.commit()
         return cart_item
     return None
-
-
 
 def get_cart_items_by_user(user_id: int, db: Session):
     return (
@@ -68,3 +65,44 @@ def create_item(db: Session, item: pydantic_validation.ItemCreate)->models.Item:
     db.commit()
     db.refresh(new_item)
     return new_item
+
+def create_review(db: Session, review: pydantic_validation.ReviewCreate):
+    # Convert Pydantic model to SQLAlchemy model
+    db_review = models.Review(
+        user_id=review.user_id,
+        text=review.text,
+        rating=review.rating
+    )
+    db.add(db_review)
+    db.commit()
+    db.refresh(db_review)
+    return db_review
+
+
+def get_reviews(db: Session):
+    return db.query(models.Review).all()
+
+def get_reviews_with_user_login(db: Session):
+    results = (
+        db.query(models.Review, models.User.login)
+        .join(models.User, models.Review.user_id == models.User.user_id)
+        .all()
+    )
+
+    reviews_with_login = [{"review": review, "user_login": user_login} for review, user_login in results]
+    return reviews_with_login
+
+def get_user_data(db: Session, user_id: int):
+    user = db.query(models.User).filter(models.User.user_id == user_id).first()
+
+    if user:
+        user_data = {
+            'user_id': user.user_id,
+            'login': user.login,
+            'email': user.email,
+        }
+
+        # Add more logic to fetch user items if needed
+
+        return user_data
+    return None

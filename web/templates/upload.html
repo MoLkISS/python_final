@@ -1,18 +1,32 @@
 {% extends "base.html" %}
 
-{% block title %} Upload Page {% endblock %}
+{% block title %} Upload Product {% endblock %}
 
 {% block body %}
-<h1>Upload Product</h1>
+  <div class="container mt-4">
+    <h1>Upload Product</h1>
     <form action="{{ url_for('upload') }}" method="post">
-        <label for="item_title">Item Title:</label>
-        <input type="text" name="item_title" required><br>
-        <label for="item_description">Item Description:</label>
-        <textarea name="item_description"></textarea><br>
-        <label for="item_cost">Item Cost:</label>
-        <input type="text" name="item_cost" required><br>
-        <label for="item_image">Item Image:</label>
-        <input type="text" name="item_image" required><br>
-        <button type="submit">Upload</button>
+      <div class="mb-3">
+        <label for="item_title" class="form-label">Item Title:</label>
+        <input type="text" class="form-control" name="item_title" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="item_description" class="form-label">Item Description:</label>
+        <textarea class="form-control" name="item_description" rows="4"></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label for="item_cost" class="form-label">Item Cost:</label>
+        <input type="text" class="form-control" name="item_cost" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="item_image" class="form-label">Item Image URL:</label>
+        <input type="text" class="form-control" name="item_image" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Upload</button>
     </form>
+  </div>
 {% endblock %}

@@ -61,14 +61,14 @@ def items():
         session['items_data'] = data
         return render_template("items.html", data=enumerate(data))
     else:
-        return render_template("warning.html")
+        return render_template("error.html")
 
 @app.route('/item/<int:item_id>')
 def item(item_id):
     try:
         data = session.get('items_data')
         selected_item = data[item_id]
-        selected_item["item_id"] = item_id
+        selected_item["item_index"] = item_id
 
 
         user_id = session.get('uid')
@@ -81,7 +81,7 @@ def item(item_id):
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if session['authenticated'] != True:
-        return render_template("warning.html")
+        return render_template("error.html")
     
 
     if request.method == 'POST':
@@ -111,21 +111,20 @@ def upload():
 @app.route("/cart_get")
 def cart_get():
     if session['authenticated'] != True:
-        return render_template("warning.html")
+        return render_template("error.html")
     
     user_id = session.get('uid')
     response = requests.get("http://localhost:8000/user/cart", params={'user_id': user_id})
     if response.status_code == 200:
         data = response.json()
-        print(data)
         return render_template("cart.html", data=data)
     else:
-        return render_template("warning.html")
+        return render_template("error.html")
     
 @app.route('/add_to_cart/<int:user_id>/<int:item_id>', methods=['POST', 'GET'])
 def add_to_cart(user_id, item_id):
     if session['authenticated'] != True:
-        return render_template("warning.html")
+        return render_template("error.html")
     try:
         # Убедимся, что тело JSON соответствует модели ItemCreate
         payload = {
@@ -174,8 +173,67 @@ def cart_remove_multiple():
         return f"Something went wrong: {str(e)}"
 
 
+@app.route('/reviews')
+def reviews():
+    try:
+        # Fetch reviews from the FastAPI endpoint
+        response = requests.get("http://localhost:8000/get_reviews")
 
+        if response.status_code == 200:
+            reviews_data = response.json()
+        else:
+            reviews_data = []
 
+        return render_template("reviews.html", reviews_data=reviews_data)
+
+    except Exception as e:
+        return f"Something went wrong: {str(e)}"
+
+@app.route('/create_review', methods=['POST', 'GET'])
+def create_review():
+    try:
+        # Получаем данные отзыва из формы
+        user_id = session.get('uid')
+        text = request.form.get('reviewText')
+        rating = request.form.get('rating')
+
+        # Подготавливаем данные для отправки на FastAPI
+        data = {
+            'user_id': user_id,
+            'text': text,
+            'rating': rating
+        }
+
+        # Отправляем запрос на FastAPI
+        response = requests.post("http://localhost:8000/add_review", json=data)
+
+        # Проверяем статус-код ответа
+        if response.status_code == 200:
+            return redirect( url_for('reviews') )
+        else:
+            return f"Failed to create review: {response.text}"
+
+    except Exception as e:
+        return f"Something went wrong: {str(e)}"
+    
+
+@app.route('/profile')
+def profile():
+    user_id = session.get('uid')
+    try:
+        # Fetch user data from the FastAPI endpoint
+        response = requests.get(f"http://localhost:8000/get_user_data/{user_id}")
+
+        if response.status_code == 200:
+            user_data = response.json()
+        else:
+            user_data = {}
+
+        return render_template("profile.html", user_data=user_data)
+
+    except Exception as e:
+        return f"Something went wrong: {str(e)}"
+    
 
 
 if __name__ == "__main__":

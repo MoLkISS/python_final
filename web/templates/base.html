@@ -15,7 +15,7 @@
 
     <nav class="navbar navbar-expand-lg bg-primary text-center">
       <div class="container">
-          <a class="navbar-brand" href="{{ url_for('home') }}">PredProj</a> <!-- Добавлен класс mx-auto для центрирования -->
+          <a class="navbar-brand" href="{{ url_for('home') }}">ClothesShop</a> <!-- Добавлен класс mx-auto для центрирования -->
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
           </button>
@@ -34,14 +34,21 @@
                   <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('upload')}}">Upload</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('reviews')}}">Reviews</a>
+                </li>
                   <li class="nav-item dropdown">
                       <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                           Authorization
                       </a>
                       <ul class="dropdown-menu">
+                          {% if session.authenticated %}
+                          <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+                          <li><a class="dropdown-item" href="{{ url_for('profile') }}">Profile</a></li>
+                          {% else %}
                           <li><a class="dropdown-item" href="{{ url_for('login') }}">Login</a></li>
                           <li><a class="dropdown-item" href="{{ url_for('register') }}">Register</a></li>
-                          <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+                          {% endif %}
                       </ul>
                   </li>
               </ul>
@@ -65,7 +72,7 @@
                     <ul class="list-unstyled">
                         <li><a href="{{ url_for('home') }}">Home</a></li>
                         <li><a href="{{ url_for('items') }}">Shop</a></li>
-                        <li><a href="#">Upload</a></li>
+                        <li><a href="{{ url_for('upload')}}">Upload</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4">
@@ -84,7 +91,7 @@
                 </div>
             </div>
             <div class="text-center">
-                <p>&copy; 2023 Assignment Project. Zhai mai project.</p>
+                <p>&copy; 2023 Final Project. Syntax error.</p>
             </div>
         </div>
     </footer>
