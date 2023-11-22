@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/base.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="custom.css"> <!-- Ваш собственный CSS-файл -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+
+</head>
+<body>
+<div class="wrapper">
+
+    <nav class="navbar navbar-expand-lg bg-primary text-center">
+      <div class="container">
+          <a class="navbar-brand" href="{{ url_for('home') }}">ClothesShop</a> <!-- Добавлен класс mx-auto для центрирования -->
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
+  
+              <ul class="navbar-nav"> <!-- Добавлен класс mx-auto для центрирования -->
+                  <li class="nav-item">
+                      <a class="nav-link" aria-current="page" href="{{ url_for('home') }}">Home</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="{{ url_for('items') }}">Items</a>
+                  </li> 
+                  <li class="nav-item">
+                      <a class="nav-link" href="{{ url_for('cart_get')}}">My Cart</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('upload')}}">Upload</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('reviews')}}">Reviews</a>
+                </li>
+                  <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Authorization
+                      </a>
+                      <ul class="dropdown-menu">
+                          {% if session.authenticated %}
+                          <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+                          <li><a class="dropdown-item" href="{{ url_for('profile') }}">Profile</a></li>
+                          {% else %}
+                          <li><a class="dropdown-item" href="{{ url_for('login') }}">Login</a></li>
+                          <li><a class="dropdown-item" href="{{ url_for('register') }}">Register</a></li>
+                          {% endif %}
+                      </ul>
+                  </li>
+              </ul>
+          </div>
+      </div>
+  </nav>
+  
+    <main class="main">
+        {% block body %}
+    <div class="container-wrapper">
+  
+    </div>
+    {% endblock %}
+    </main>
+  
+      <footer class="bg-dark text-light text-center mt-5 footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Useful Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('home') }}">Home</a></li>
+                        <li><a href="{{ url_for('items') }}">Shop</a></li>
+                        <li><a href="{{ url_for('upload')}}">Upload</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact Us</h5>
+                    <p>Astana, Kazakhstan</p>
+                    <p>Email: non-existent@email.net</p>
+                    <p>Phone: +123 456 789</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Social Media</h5>
+                    <ul class="list-inline mt-5">
+                        <li class="list-inline-item"><a href="https://www.facebook.com"><i class="fab fa-facebook"></i></a></li>
+                        <li class="list-inline-item"><a href="https://www.twitter.com"><i class="fab fa-twitter"></i></a></li>
+                        <li class="list-inline-item"><a href="https://www.instagram.com"><i class="fab fa-instagram"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="text-center">
+                <p>&copy; 2023 Final Project. Syntax error.</p>
+            </div>
+        </div>
+    </footer>
+    
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  
+
+</div>  
+</body>
+</html>

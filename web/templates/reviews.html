@@ -1,0 +1,45 @@
+<!-- templates/reviews.html -->
+
+{% extends 'base.html' %}
+
+{% block title %} Reviews {% endblock %}
+
+{% block body %}
+  <div class="container mt-4">
+    <h2>Reviews</h2>
+    
+    <!-- Review creation form -->
+    <form method="post" action="{{ url_for('create_review') }}">
+        <div class="mb-3">
+          <label for="reviewText" class="form-label">Your Review:</label>
+          <textarea class="form-control" id="reviewText" name="reviewText" rows="4" required></textarea>
+        </div>
+        
+        <div class="mb-3">
+          <label for="rating" class="form-label">Rating:</label>
+          <input type="number" class="form-control" id="rating" name="rating" min="1" max="5" required>
+        </div>
+  
+        <button type="submit" class="btn btn-primary">Submit Review</button>
+      </form>
+
+    <!-- Display the reviews -->
+    {% if reviews_data %}
+      <div class="row mt-4">
+        {% for review_entry in reviews_data %}
+          <div class="col-md-6 mb-3">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">{{ review_entry.user_login }}</h5>
+                <p class="card-text">Rating: {{ review_entry.review.rating }}</p>
+                <p class="card-text">{{ review_entry.review.text }}</p>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="mt-4">No reviews available.</p>
+    {% endif %}
+  </div>
+{% endblock %}

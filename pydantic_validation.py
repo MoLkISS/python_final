@@ -7,7 +7,29 @@ class UserBase(BaseModel):
 class ItemBase(BaseModel):
     item_title: str
     item_description: str
+    item_image: str
     item_cost: int
+
+class CartBase(BaseModel):
+    item_id: int
+    user_id: int
+
+    class Config:
+        orm_mode: True
+
+class ReviewBase(BaseModel):
+    user_id: int
+    text: str
+    rating: int
+
+class ReviewCreate(ReviewBase):
+    pass
+
+class Review(ReviewBase):
+    id: int
+
+    class Config:
+        orm_mode = True
 
 class ItemCreate(ItemBase):
     item_owner: int
@@ -28,3 +50,7 @@ class User(UserBase):
 
     class Config:
         orm_mode: True
+
+class ItemRemove(BaseModel):
+    item_id: int
+    user_id: int

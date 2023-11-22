@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %} Login Page {% endblock %}
+
+{% block body %}
+<style>
+    .form-group {
+        margin-bottom: 15px;
+    }
+</style>
+
+<div class="container">
+    <div class="inner-page mt-5">
+        <h2>Login</h2>
+        <form action="{{ url_for('login') }}" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="login" style="margin-bottom: 10px;" name="login">Login</label>
+                <input type="text" class="form-control" id="login" name="login" placeholder="Enter your login" required>
+            </div>
+            <div class="form-group">
+                <label for="password" style="margin-bottom: 10px;" name="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="btn btn-success mt-1">Login</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
