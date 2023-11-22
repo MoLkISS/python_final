@@ -1,3 +1,4 @@
+<!-- templates/shop.html -->
 {% extends 'base.html' %}
 
 {% block title %} Shop {% endblock %}
@@ -7,12 +8,12 @@
     <div class="row">
         {% for item_index, item in data %}
             <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="{{ item['item_image'] }}" class="card-img-top" alt="Product Image">
+                <div class="card" style="height: 100%;">
+                    <img src="{{ item['item_image'] }}" class="card-img-top img-fluid" alt="Product Image">
                     <div class="card-body">
                         <h5 class="card-title">{{ item['item_title'] }}</h5>
                         <p class="card-text">Price: {{ item['item_cost'] }}</p>
-                        <a href="{{ url_for('item', item_id = item_index) }}" class="btn btn-primary btn-block">See more</a>
+                        <a href="{{ url_for('item', item_id=item_index) }}" class="btn btn-primary btn-block">See more</a>
                     </div>
                 </div>
             </div>

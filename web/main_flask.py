@@ -102,7 +102,7 @@ def upload():
         response = requests.post('http://localhost:8000/upload', json=data)
 
         if response.status_code == 200:
-            return redirect(url_for('home'))
+            return redirect(url_for('items'))
         else:
             return render_template('error.html', message='Failed to upload product')
 
@@ -110,7 +110,7 @@ def upload():
 
 @app.route("/cart_get")
 def cart_get():
-    if session['authenticated'] != True:
+    if session.get('authenticated') != True:
         return render_template("error.html")
     
     user_id = session.get('uid')
@@ -140,7 +140,20 @@ def add_to_cart(user_id, item_id):
     except Exception:
         return "something went wrong in flask"
     
-# ... (ваш текущий код)
+# @app.route("/cart_confirm", methods=["POST"])
+# def cart_confirm():
+#     selected_items = request.form.getlist('selected_items[]')
+#     if not selected_items:
+#             return "No items to buy"
+#     user_id = session.get('uid')
+#     items_data = session.get("items_data", [])
+#     items_to_buy = [{"item_id": int(item_id), "user_id": int(user_id)} for item_id in selected_items]
+#     response = requests.post("http://localhost:8000/cart-confirm", json=items_to_buy)
+#     if response.status_code != 200:
+#         return render_template("error.html")
+    
+#     session['items_data'] = items_data
+#     return render_template("confirm_buy")
 
 @app.route("/cart_remove_multiple", methods=['POST'])
 def cart_remove_multiple():

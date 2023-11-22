@@ -7,28 +7,46 @@
 <div class="container">
   <form method="post" action="{{ url_for('cart_remove_multiple') }}">
     <div class="container">
-        <h2>Your Cart</h2>
-        {% for cart_item in data %}
-            <div class="card mb-3" style="max-width: 540px;">
-                <div class="row g-0">
-                    <div class="col-md-4">
-                        <img src="{{ cart_item.item.item_image }}" class="img-fluid rounded-start" alt="...">
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ cart_item.item.item_title }}</h5>
-                            <p class="card-text">{{ cart_item.item.item_description }}</p>
-                            <p class="card-text"><small class="text-body-secondary">Price: {{ cart_item.item.item_cost }}</small></p>
-                            <input type="checkbox" name="selected_items[]" value="{{ cart_item.item.item_id }}">
+        <h2 class="mb-5 mt-2 text-center">Your Cart</h2>
+        <div class="row justify-content-center align-items-stretch">
+            {% if data %}
+                {% for cart_item in data %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100" style="max-width: 540px;">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img src="{{ cart_item.item.item_image }}" class="img-fluid rounded-start h-100" alt="...">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ cart_item.item.item_title }}</h5>
+                                        <p class="card-text">{{ cart_item.item.item_description }}</p>
+                                        <p class="card-text"><small class="text-body-secondary">Price: {{ cart_item.item.item_cost }}</small></p>
+                                        <input type="checkbox" name="selected_items[]" value="{{ cart_item.item.item_id }}">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-md-12 text-center">
+                    <h2>Your cart is empty</h2>
                 </div>
-            </div>
-        {% endfor %}
+            {% endif %}
+        </div>
+        <div class="text-center mt-4">
+            <button class="btn btn-primary" type="submit">Remove Selected Items</button>
+        </div>
+        <div class="text-center mt-4">
+            <button class="btn btn-primary" type="submit" onclick="showAlert()">Buy Selected Items</button>
+        </div>
     </div>
-    <button type="submit">Remove Selected Items</button>
-</form>
-
+  </form>
 </div>
+<script>
+    function showAlert(){
+        alert("Success");
+    }
+</script>
 {% endblock %}
-
