@@ -147,6 +147,7 @@ def cart_remove_multiple():
     try:
         # Получаем список выбранных предметов из формы
         selected_items = request.form.getlist('selected_items[]')
+        print(selected_items)
 
         if not selected_items:
             return "No items selected for removal"
@@ -156,7 +157,7 @@ def cart_remove_multiple():
         items_data = session.get('items_data', [])
 
         # Преобразуем список в список словарей
-        items_to_remove = [{"item_id": int(item_id)+1, "user_id": int(user_id)} for item_id in selected_items]
+        items_to_remove = [{"item_id": int(item_id), "user_id": int(user_id)} for item_id in selected_items]
         print(items_to_remove)
         # Отправляем запрос на удаление всех выбранных предметов
         response = requests.post("http://localhost:8000/remove-multiple-from-cart", json=items_to_remove)

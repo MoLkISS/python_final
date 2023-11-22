@@ -19,7 +19,7 @@
                             <h5 class="card-title">{{ cart_item.item.item_title }}</h5>
                             <p class="card-text">{{ cart_item.item.item_description }}</p>
                             <p class="card-text"><small class="text-body-secondary">Price: {{ cart_item.item.item_cost }}</small></p>
-                            <input type="checkbox" name="selected_items[]" value="{{ loop.index0 }}">
+                            <input type="checkbox" name="selected_items[]" value="{{ cart_item.item.item_id }}">
                         </div>
                     </div>
                 </div>

@@ -59,7 +59,7 @@ def remove_multiple_from_cart(selected_items: List[pydantic_validation.CartBase]
     try:
         # Удаляем каждый выбранный предмет из корзины
         for item_remove in selected_items:
-            success = crud.remove_item_from_cart(db, item_remove.item_id, item_remove.user_id)
+            success = crud.remove_item_from_cart(db, item_remove.user_id, item_remove.item_id)
             if not success:
                 raise HTTPException(status_code=404, detail=f"Item with ID {item_remove.item_id} not found in the user's cart")
 
@@ -97,7 +97,7 @@ def get_certain_user(login, db: Session = Depends(get_db)):
 @app.get("/items/")
 def get_all_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     items = crud.get_all_items(db=db, skip=skip, limit=limit)
-
+    print(items)
     data = []
     for item in items:
         item_data = {
