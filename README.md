@@ -1,4 +1,2 @@
-﻿# python_final
-# pip install [
-# flask, fastapi["all"], sqlalchemy, flask_sqlalchemy?, pydantic
-# ]
+ClothesShop project
+Using Python, Flask, FastAPI, html/css
